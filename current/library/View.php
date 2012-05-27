@@ -10,19 +10,38 @@
 class View
 {
 	protected $_pageView = null;
+	protected $_components = null;
 	
-	public function setPageView( $pageView )
+	public function __construct( $pageView = null, $components = null )
 	{
-		$this->_pageView = $pageView;
+		if( $pageView != null ) $this->addPageView( $pageView );
+		if( $components != null ) $this->addComponents( $components );
+	}
+	
+	public function addPageView( $pageView )
+	{
+		if( ! is_array( $pageView ) ) $pageView = array( "content" => $pageView );
+		if( ! is_array( $this->_pageView ) ) $this->_pageView = array();
+		$this->_pageView = array_merge( $this->_pageView, $pageView );
+	}
+	
+	public function addComponents( $components )
+	{
+		if( ! is_array( $components ) ) $components = array( $components );
+		if( ! is_array( $this->_components ) ) $this->_components = array();
+		$this->_components = array_merge( $this->_components, $components );
+	}
+	
+	public function addComponent( $component )
+	{
+		$this->addComponents( $component );
 	}
 	
 	public function show()
 	{
 		ob_start( 'ob_gzhandler' );
 		
-		if( ! isset( $this->_pageView ) ) throw new Exception( "You must call addPageView() for your view object to configure page view data" );
-		
-		if( ! is_array( $this->_pageView ) ) include SOURCE . "/" . $this->_pageView;
+		if( ! is_array( $this->_pageView ) ) throw new Exception( "You must call addPageView() for your view object to configure page view data" );
 		elseif( isset( $this->_pageView[ 'layout' ] ) ) include SOURCE . "/" . $this->_pageView[ 'layout' ];
 		elseif( isset( $this->_pageView[ 'content' ] ) ) include SOURCE . "/" . $this->_pageView[ 'content' ];
 		else throw new Exception( "Page view data is not configured properly in your view object" );
