@@ -9,9 +9,30 @@
 
 class View
 {
-	//ob_start( 'ob_gzhandler' );
-	// Page rendering should use gzip for data sent to client, but ajax calls that don't use view shouldn't
-	// This is because pages are generally large where gzip cuts down on size a lot, for less bandwidth
-	// But ajax calls are generally tiny where gzip overhead actually makes the size larger, for more bandwidth
-	//ob_end_flush();
+	protected $_pageView = null;
+	
+	public function setPageView( $pageView )
+	{
+		$this->_pageView = $pageView;
+	}
+	
+	public function show()
+	{
+		ob_start( 'ob_gzhandler' );
+		
+		if( ! isset( $this->_pageView ) ) throw new Exception( "You must call addPageView() for your view object to configure page view data" );
+		
+		if( ! is_array( $this->_pageView ) ) include SOURCE . "/" . $this->_pageView;
+		elseif( isset( $this->_pageView[ 'layout' ] ) ) include SOURCE . "/" . $this->_pageView[ 'layout' ];
+		elseif( isset( $this->_pageView[ 'content' ] ) ) include SOURCE . "/" . $this->_pageView[ 'content' ];
+		else throw new Exception( "Page view data is not configured properly in your view object" );
+		
+		ob_end_flush();
+	}
+	
+	public function content( $viewTag )
+	{
+		if( isset( $this->_pageView[ $viewTag ] ) ) include SOURCE . "/" . $this->_pageView[ $viewTag ];
+		else throw new Exception( "File tag '" . $viewTag . "' not found in page view data" );
+	}
 }
