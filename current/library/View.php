@@ -13,7 +13,9 @@ class View
 	protected $_components = null;
 	protected $_curViewTag = null;
 	protected $_assets = array();
+	protected $_scripts = array();
 	protected $_viewTagAssetHashes = null;
+	protected $_viewTagScriptHashes = null;
 	protected $_document = null;
 	
 	public function __construct( $pageView = null, $components = null )
@@ -70,6 +72,7 @@ class View
 		$this->_curViewTag = $viewTag;
 		
 		if( ! is_array( $this->_assets[ $this->_curViewTag ] ) ) $this->_assets[ $this->_curViewTag ] = array();
+		if( ! is_array( $this->_scripts[ $this->_curViewTag ] ) ) $this->_scripts[ $this->_curViewTag ] = array();
 		
 		if( isset( $this->_pageView[ $viewTag ] ) ) include SOURCE . "/" . $this->_pageView[ $viewTag ];
 		else throw new Exception( "File tag '" . $viewTag . "' not found in page view data" );
@@ -91,6 +94,11 @@ class View
 	public function addCSS( $css )
 	{
 		$this->_assets[ $this->_curViewTag ][ $css ] = $css; // Using $css as the array key prevents redundancy
+	}
+	
+	public function addJS( $js )
+	{
+		$this->_scripts[ $this->_curViewTag ][ $js ] = $js; // Using $js as the array key prevents redundancy
 	}
 	
 	public function head()
@@ -131,6 +139,24 @@ class View
 				file_put_contents( $filename, $css );
 			}
 		}
+		
+		$viewTagScriptHashes = $this->getViewTagScriptHashes();
+		
+		foreach( $viewTagScriptHashes as $viewTag => $hash ) {
+			$filename = WEBROOT . "/js/" . $viewTag . "-" . $hash . ".js";
+			
+			if( ! is_file( $filename ) ) {
+				$js = "";
+				
+				foreach( $this->_scripts[ $viewTag ] as $script ) {
+					if( "js" == strtolower( pathinfo( $script, PATHINFO_EXTENSION ) ) ) {
+						$js .= "\n" . file_get_contents( SOURCE . "/" . $script ) . "\n";
+					}
+				}
+				
+				file_put_contents( $filename, $js );
+			}
+		}
 	}
 	
 	protected function renderHead()
@@ -141,6 +167,12 @@ class View
 		
 		foreach( $viewTagAssetHashes as $viewTag => $hash ) {
 			$head .= "<link rel=\"stylesheet\" type=\"text/css\" href=\"/css/" . $viewTag . "-" . $hash . ".css\" />\n";
+		}
+		
+		$viewTagScriptHashes = $this->getViewTagScriptHashes();
+		
+		foreach( $viewTagScriptHashes as $viewTag => $hash ) {
+			$head .= "<script type=\"text/javascript\" src=\"/js/" . $viewTag . "-" . $hash . ".js\"></script>\n";
 		}
 		
 		$this->_document = str_replace( "<INSERT_HEAD_DATA>", $head, $this->_document );
@@ -162,6 +194,25 @@ class View
 		}
 		else {
 			return $this->_viewTagAssetHashes;
+		}
+	}
+	
+	protected function getViewTagScriptHashes()
+	{
+		if( null == $this->_viewTagScriptHashes ) {
+			$viewTagScriptHashes = array();
+			
+			foreach( $this->_scripts as $viewTag => $scripts ) {
+				ksort( $scripts );
+				if( ! empty( $scripts ) ) $viewTagScriptHashes[ $viewTag ] = md5( implode( ":", $scripts ) );
+			}
+			
+			$this->_viewTagScriptHashes = $viewTagScriptHashes;
+			
+			return $viewTagScriptHashes;
+		}
+		else {
+			return $this->_viewTagScriptHashes;
 		}
 	}
 }
