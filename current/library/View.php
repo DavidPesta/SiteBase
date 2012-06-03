@@ -136,6 +136,7 @@ class View
 					}
 				}
 				
+				if( ! is_dir( WEBROOT . "/css" ) ) mkdir( WEBROOT . "/css", 0777, true );
 				file_put_contents( $filename, $css );
 			}
 		}
@@ -154,6 +155,7 @@ class View
 					}
 				}
 				
+				if( ! is_dir( WEBROOT . "/js" ) ) mkdir( WEBROOT . "/js", 0777, true );
 				file_put_contents( $filename, $js );
 			}
 		}
