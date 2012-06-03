@@ -113,7 +113,7 @@ class View
 		foreach( $viewTagAssetHashes as $viewTag => $hash ) {
 			$filename = WEBROOT . "/css/" . $viewTag . "-" . $hash . ".css";
 			
-			if( ! is_file( $filename ) ) {
+			if( true != PRODUCTION || ! is_file( $filename ) ) {
 				$css = "";
 				
 				foreach( $this->_assets[ $viewTag ] as $asset ) {
@@ -145,7 +145,7 @@ class View
 		foreach( $viewTagScriptHashes as $viewTag => $hash ) {
 			$filename = WEBROOT . "/js/" . $viewTag . "-" . $hash . ".js";
 			
-			if( ! is_file( $filename ) ) {
+			if( true != PRODUCTION || ! is_file( $filename ) ) {
 				$js = "";
 				
 				foreach( $this->_scripts[ $viewTag ] as $script ) {
