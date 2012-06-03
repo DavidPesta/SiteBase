@@ -71,8 +71,8 @@ class View
 		$prevViewTag = $this->_curViewTag;
 		$this->_curViewTag = $viewTag;
 		
-		if( ! is_array( $this->_assets[ $this->_curViewTag ] ) ) $this->_assets[ $this->_curViewTag ] = array();
-		if( ! is_array( $this->_scripts[ $this->_curViewTag ] ) ) $this->_scripts[ $this->_curViewTag ] = array();
+		if( ! isset( $this->_assets[ $this->_curViewTag ] ) ) $this->_assets[ $this->_curViewTag ] = array();
+		if( ! isset( $this->_scripts[ $this->_curViewTag ] ) ) $this->_scripts[ $this->_curViewTag ] = array();
 		
 		if( isset( $this->_pageView[ $viewTag ] ) ) include SOURCE . "/" . $this->_pageView[ $viewTag ];
 		else throw new Exception( "File tag '" . $viewTag . "' not found in page view data" );
