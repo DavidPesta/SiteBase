@@ -86,9 +86,20 @@ class View
 		
 		// We can add multiple different kinds of $style presets here, where "default" is the default preset
 		if( "default" == $style ) $style = " style=\"display: inline-block;\""; // This style represents standard image behavior
+		elseif( "resource" == $style ) return $this->dataURI( $image );
 		else $style = " style=\"" . $style . "\"";
 		
 		return "<div" . $style . " class=\"" . $this->_curViewTag . "-image-" . md5( $image ) . "\"></div>";
+	}
+	
+	public function dataURI( $resource )
+	{
+		$imgData = getimagesize( SOURCE . "/" . $resource );
+		
+		$rawImage = file_get_contents( SOURCE . "/" . $resource );
+		$base64 = base64_encode( $rawImage );
+		
+		return "data:" . $imgData[ 'mime' ] . ";base64," . $base64;
 	}
 	
 	public function addCSS( $css )
@@ -120,12 +131,18 @@ class View
 					if( "css" == strtolower( pathinfo( $asset, PATHINFO_EXTENSION ) ) ) {
 						$css .= "\n" . file_get_contents( SOURCE . "/" . $asset ) . "\n";
 					}
+					elseif( "pcss" == strtolower( pathinfo( $asset, PATHINFO_EXTENSION ) ) ) {
+						ob_start();
+						include SOURCE . "/" . $asset;
+						$css .= "\n" . ob_get_contents() . "\n";
+						ob_clean();
+					}
 					else {
 						$imgData = getimagesize( SOURCE . "/" . $asset );
-
+						
 						$rawImage = file_get_contents( SOURCE . "/" . $asset );
 						$base64 = base64_encode( $rawImage );
-
+						
 						$css .= "
 							." . $viewTag . "-image-" . md5( $asset ) . " {
 								width: " . $imgData[ 0 ] . "px;
@@ -152,6 +169,12 @@ class View
 				foreach( $this->_scripts[ $viewTag ] as $script ) {
 					if( "js" == strtolower( pathinfo( $script, PATHINFO_EXTENSION ) ) ) {
 						$js .= "\n" . file_get_contents( SOURCE . "/" . $script ) . "\n";
+					}
+					elseif( "pjs" == strtolower( pathinfo( $script, PATHINFO_EXTENSION ) ) ) {
+						ob_start();
+						include SOURCE . "/" . $script;
+						$js .= "\n" . ob_get_contents() . "\n";
+						ob_clean();
 					}
 				}
 				
