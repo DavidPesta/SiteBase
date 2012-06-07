@@ -80,16 +80,38 @@ class View
 		$this->_curViewTag = $prevViewTag;
 	}
 	
-	public function image( $image, $style = "default" )
+	public function image( $image, $style = "default", $useDataUri = null )
 	{
-		$this->_assets[ $this->_curViewTag ][ $image ] = $image; // Using $image as the array key prevents redundancy
+		if( is_bool( $useDataUri ) !== true ) $useDataUri = USE_DATA_URIS;
 		
 		// We can add multiple different kinds of $style presets here, where "default" is the default preset
-		if( "default" == $style ) $style = " style=\"display: inline-block;\""; // This style represents standard image behavior
-		elseif( "resource" == $style ) return $this->dataURI( $image );
+		if( "default" == $style ) {
+			if( true === $useDataUri ) $style = " style=\"display: inline-block;\""; // This style represents standard image behavior
+			else $style = "";
+		}
 		else $style = " style=\"" . $style . "\"";
 		
-		return "<div" . $style . " class=\"" . $this->_curViewTag . "-image-" . md5( $image ) . "\"></div>";
+		if( true === $useDataUri ) {
+			$this->_assets[ $this->_curViewTag ][ $image ] = $image; // Using $image as the array key prevents redundancy
+			return "<div" . $style . " class=\"" . $this->_curViewTag . "-image-" . md5( $image ) . "\"></div>";
+		}
+		else {
+			$this->ensureImageInWebroot( $image );
+			return "<img src=\"/images/" . ltrim( $image, "/" ) . "\"" . $style . ">";
+		}
+	}
+	
+	public function resource( $resource, $useDataUri = null )
+	{
+		if( is_bool( $useDataUri ) !== true ) $useDataUri = USE_DATA_URIS;
+		
+		if( true === $useDataUri ) {
+			return $this->dataURI( $resource );
+		}
+		else {
+			$this->ensureImageInWebroot( $resource );
+			return "/images/" . ltrim( $resource, "/" );
+		}
 	}
 	
 	public function dataURI( $resource )
@@ -100,6 +122,18 @@ class View
 		$base64 = base64_encode( $rawImage );
 		
 		return "data:" . $imgData[ 'mime' ] . ";base64," . $base64;
+	}
+	
+	public function ensureImageInWebroot( $image )
+	{
+		$source = SOURCE . "/" . ltrim( $image, "/" );
+		$destination = WEBROOT . "/images/" . ltrim( $image, "/" );
+		
+		if( true !== PRODUCTION || ! is_file( $destination ) ) {
+			$imagePath = pathinfo( $destination, PATHINFO_DIRNAME );
+			if( ! is_dir( $imagePath ) ) mkdir( $imagePath, 0777, true );
+			copy( $source, $destination );
+		}
 	}
 	
 	public function addCSS( $css )
@@ -124,7 +158,7 @@ class View
 		foreach( $viewTagAssetHashes as $viewTag => $hash ) {
 			$filename = WEBROOT . "/css/" . $viewTag . "-" . $hash . ".css";
 			
-			if( true != PRODUCTION || ! is_file( $filename ) ) {
+			if( true !== PRODUCTION || ! is_file( $filename ) ) {
 				$css = "";
 				
 				foreach( $this->_assets[ $viewTag ] as $asset ) {
@@ -163,7 +197,7 @@ class View
 		foreach( $viewTagScriptHashes as $viewTag => $hash ) {
 			$filename = WEBROOT . "/js/" . $viewTag . "-" . $hash . ".js";
 			
-			if( true != PRODUCTION || ! is_file( $filename ) ) {
+			if( true !== PRODUCTION || ! is_file( $filename ) ) {
 				$js = "";
 				
 				foreach( $this->_scripts[ $viewTag ] as $script ) {

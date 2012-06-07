@@ -11,3 +11,4 @@
 // Define constants
 
 define( "PRODUCTION", false );
+define( "USE_DATA_URIS", false );
