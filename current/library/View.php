@@ -9,6 +9,7 @@
 
 class View
 {
+	protected $_variables = array();
 	protected $_pageView = null;
 	protected $_components = null;
 	protected $_curViewTag = null;
@@ -22,6 +23,31 @@ class View
 	{
 		if( $pageView != null ) $this->addPageView( $pageView );
 		if( $components != null ) $this->addComponents( $components );
+	}
+	
+	public function __set( $name, $value )
+	{
+		$this->_variables[ $name ] = $value;
+	}
+	
+	public function __get( $name )
+	{
+		return $this->_variables[ $name ];
+	}
+	
+	public function __isset( $name )
+	{
+		return isset( $this->_variables[ $name ] );
+	}
+	
+	public function __unset( $name )
+	{
+		unset( $this->_variables[ $name ] );
+	}
+	
+	public function getVariables()
+	{
+		return $this->_variables;
 	}
 	
 	public function addPageView( $pageView )
@@ -74,7 +100,7 @@ class View
 		if( ! isset( $this->_assets[ $this->_curViewTag ] ) ) $this->_assets[ $this->_curViewTag ] = array();
 		if( ! isset( $this->_scripts[ $this->_curViewTag ] ) ) $this->_scripts[ $this->_curViewTag ] = array();
 		
-		if( isset( $this->_pageView[ $viewTag ] ) ) include SOURCE . "/" . $this->_pageView[ $viewTag ];
+		if( isset( $this->_pageView[ $viewTag ] ) ) $this->safeInclude( SOURCE . "/" . $this->_pageView[ $viewTag ] );
 		else throw new Exception( "File tag '" . $viewTag . "' not found in page view data" );
 		
 		$this->_curViewTag = $prevViewTag;
@@ -167,7 +193,7 @@ class View
 					}
 					elseif( "pcss" == strtolower( pathinfo( $asset, PATHINFO_EXTENSION ) ) ) {
 						ob_start();
-						include SOURCE . "/" . $asset;
+						$this->safeInclude( SOURCE . "/" . $asset );
 						$css .= "\n" . ob_get_contents() . "\n";
 						ob_clean();
 					}
@@ -206,7 +232,7 @@ class View
 					}
 					elseif( "pjs" == strtolower( pathinfo( $script, PATHINFO_EXTENSION ) ) ) {
 						ob_start();
-						include SOURCE . "/" . $script;
+						$this->safeInclude( SOURCE . "/" . $script );
 						$js .= "\n" . ob_get_contents() . "\n";
 						ob_clean();
 					}
@@ -273,5 +299,11 @@ class View
 		else {
 			return $this->_viewTagScriptHashes;
 		}
+	}
+	
+	protected function safeInclude( $fileForSafeInclude )
+	{
+		extract( $this->_variables );
+		include $fileForSafeInclude;
 	}
 }
