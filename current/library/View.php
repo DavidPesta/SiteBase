@@ -71,7 +71,7 @@ class View
 	
 	public function show()
 	{
-		ob_start( 'ob_gzhandler' );
+		if( true === PRODUCTION ) ob_start( 'ob_gzhandler' );
 		
 		ob_start();
 		
@@ -89,7 +89,7 @@ class View
 		
 		echo $this->_document;
 		
-		ob_end_flush();
+		if( true === PRODUCTION ) ob_end_flush();
 	}
 	
 	public function content( $viewTag )
