@@ -4,7 +4,7 @@ SiteBase
 A simple PHP framework for organizing pages and components as micro MVC structures with optional support for <a href="https://github.com/DavidPesta/JSComponent">JSComponent</a>.
 
 <b>Initial Release:</b> May 26, 2012<br>
-<b>Last Updated:</b> June 9, 2012
+<b>Last Updated:</b> June 10, 2012
 
 
 ## Documentation
@@ -14,7 +14,7 @@ Documentation coming soon.
 
 ## License
 
-(The MIT License)
+The MIT License
 
 Copyright (c) 2012 David Pesta
 
