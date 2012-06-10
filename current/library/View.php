@@ -10,8 +10,8 @@
 class View
 {
 	protected $_variables = array();
-	protected $_pageView = null;
-	protected $_components = null;
+	protected $_pageView = array();
+	protected $_components = array();
 	protected $_curViewTag = null;
 	protected $_assets = array();
 	protected $_scripts = array();
@@ -53,14 +53,12 @@ class View
 	public function addPageView( $pageView )
 	{
 		if( ! is_array( $pageView ) ) $pageView = array( "content" => $pageView );
-		if( ! is_array( $this->_pageView ) ) $this->_pageView = array();
 		$this->_pageView = array_merge( $this->_pageView, $pageView );
 	}
 	
 	public function addComponents( $components )
 	{
 		if( ! is_array( $components ) ) $components = array( $components );
-		if( ! is_array( $this->_components ) ) $this->_components = array();
 		$this->_components = array_merge( $this->_components, $components );
 	}
 	
@@ -84,6 +82,7 @@ class View
 		
 		ob_clean();
 		
+		$this->processComponents();
 		$this->buildCache();
 		$this->renderHead();
 		
@@ -175,6 +174,65 @@ class View
 	public function head()
 	{
 		return "<INSERT_HEAD_DATA>";
+	}
+	
+	public function JSComponents()
+	{
+		return "<INSERT_JSComponents>";
+	}
+	
+	protected function processComponents()
+	{
+		ob_start();
+		
+		echo "<div id=\"JSComponents\" style=\"display: none;\">";
+		
+		foreach( $this->_components as $componentPath ) {
+			$pathTokens = explode( "/", $componentPath );
+			$component = array_pop( $pathTokens );
+			
+			$phtml = $componentPath . "/" . $component . ".phtml";
+			
+			echo "\n";
+			$this->safeInclude( SOURCE . "/" . $phtml );
+			echo "\n";
+		}
+		
+		echo "</div>";
+		
+		$JSComponents = ob_get_contents();
+		
+		ob_clean();
+		
+		$this->_document = str_replace( "<INSERT_JSComponents>", $JSComponents, $this->_document );
+		
+		foreach( $this->_components as $componentPath ) {
+			if( ! isset( $this->_assets[ 'components' ] ) ) $this->_assets[ 'components' ] = array();
+			if( ! isset( $this->_scripts[ 'components' ] ) ) $this->_scripts[ 'components' ] = array();
+			
+			$pathTokens = explode( "/", $componentPath );
+			$component = array_pop( $pathTokens );
+			
+			$css = $componentPath . "/" . $component . ".css";
+			if( file_exists( SOURCE . "/" . $css ) ) {
+				$this->_assets[ 'components' ][ $css ] = $css;
+			}
+			
+			$pcss = $componentPath . "/" . $component . ".pcss";
+			if( file_exists( SOURCE . "/" . $pcss ) ) {
+				$this->_assets[ 'components' ][ $pcss ] = $pcss;
+			}
+			
+			$js = $componentPath . "/" . $component . ".js";
+			if( file_exists( SOURCE . "/" . $js ) ) {
+				$this->_scripts[ 'components' ][ $js ] = $js;
+			}
+			
+			$pjs = $componentPath . "/" . $component . ".pjs";
+			if( file_exists( SOURCE . "/" . $pjs ) ) {
+				$this->_scripts[ 'components' ][ $pjs ] = $pjs;
+			}
+		}
 	}
 	
 	protected function buildCache()
