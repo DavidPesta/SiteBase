@@ -206,32 +206,20 @@ class View
 		
 		$this->_document = str_replace( "<INSERT_JSComponents>", $JSComponents, $this->_document );
 		
-		foreach( $this->_components as $componentPath ) {
+		if( ! empty( $this->_components ) ) {
 			if( ! isset( $this->_assets[ 'components' ] ) ) $this->_assets[ 'components' ] = array();
 			if( ! isset( $this->_scripts[ 'components' ] ) ) $this->_scripts[ 'components' ] = array();
-			
+		}
+		
+		foreach( $this->_components as $componentPath ) {
 			$pathTokens = explode( "/", $componentPath );
 			$component = array_pop( $pathTokens );
+			$component = $componentPath . "/" . $component;
 			
-			$css = $componentPath . "/" . $component . ".css";
-			if( file_exists( SOURCE . "/" . $css ) ) {
-				$this->_assets[ 'components' ][ $css ] = $css;
-			}
-			
-			$pcss = $componentPath . "/" . $component . ".pcss";
-			if( file_exists( SOURCE . "/" . $pcss ) ) {
-				$this->_assets[ 'components' ][ $pcss ] = $pcss;
-			}
-			
-			$js = $componentPath . "/" . $component . ".js";
-			if( file_exists( SOURCE . "/" . $js ) ) {
-				$this->_scripts[ 'components' ][ $js ] = $js;
-			}
-			
-			$pjs = $componentPath . "/" . $component . ".pjs";
-			if( file_exists( SOURCE . "/" . $pjs ) ) {
-				$this->_scripts[ 'components' ][ $pjs ] = $pjs;
-			}
+			$this->_assets[ 'components' ][ $component . ".css" ] = $component . ".css";
+			$this->_assets[ 'components' ][ $component . ".pcss" ] = $component . ".pcss";
+			$this->_scripts[ 'components' ][ $component . ".js" ] = $component . ".js";
+			$this->_scripts[ 'components' ][ $component . ".pjs" ] = $component . ".pjs";
 		}
 	}
 	
@@ -361,7 +349,9 @@ class View
 	
 	protected function safeInclude( $fileForSafeInclude )
 	{
-		extract( $this->_variables );
-		include $fileForSafeInclude;
+		if( file_exists( $fileForSafeInclude ) ) {
+			extract( $this->_variables );
+			include $fileForSafeInclude;
+		}
 	}
 }
