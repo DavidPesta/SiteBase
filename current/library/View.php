@@ -122,7 +122,7 @@ class View
 		}
 		else {
 			$this->ensureImageInWebroot( $image );
-			return "<img src=\"/images/" . ltrim( $image, "/" ) . "\"" . $style . ">";
+			return "<img src=\"/img/" . ltrim( $image, "/" ) . "\"" . $style . ">";
 		}
 	}
 	
@@ -135,7 +135,7 @@ class View
 		}
 		else {
 			$this->ensureImageInWebroot( $resource );
-			return "/images/" . ltrim( $resource, "/" );
+			return "/img/" . ltrim( $resource, "/" );
 		}
 	}
 	
@@ -152,7 +152,7 @@ class View
 	public function ensureImageInWebroot( $image )
 	{
 		$source = SOURCE . "/" . ltrim( $image, "/" );
-		$destination = WEBROOT . "/images/" . ltrim( $image, "/" );
+		$destination = WEBROOT . "/img/" . ltrim( $image, "/" );
 		
 		if( true !== PRODUCTION || ! is_file( $destination ) ) {
 			$imagePath = pathinfo( $destination, PATHINFO_DIRNAME );
