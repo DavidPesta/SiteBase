@@ -22,10 +22,17 @@ function checkErrors() {
 		);
 		
 		if( ! is_dir( ERRORS ) ) mkdir( ERRORS, 0777, true );
-		list( $seconds, $micro ) = explode( ".", microtime( true ) );
-		$filename = date( "Y-m-d_H-i-s_", $seconds ) . $micro . ".log";
 		
-		file_put_contents( ERRORS . "/" . $filename, var_export( $errors, true ) );
+		list( $seconds, $micro ) = explode( ".", microtime( true ) );
+		$dateTime = date( "Y-m-d H:i:s", $seconds ) . "." . $micro;
+		
+		$content = "------------------------\n" . $dateTime . "\n\n";
+		$content .= var_export( $errors, true );
+		$content .= "\n\n";
+		
+		$fileHash = md5( serialize( $lastError ) );
+		
+		file_put_contents( ERRORS . "/" . $fileHash . ".log", $content, FILE_APPEND );
 	}
 }
 
