@@ -1,0 +1,1 @@
+Drop the "source" folder into a new SiteBase project to see this example in operation.

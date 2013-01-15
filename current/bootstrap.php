@@ -1,7 +1,7 @@
 <?php
 
 /*
-* Copyright (c) 2012 David Pesta, https://github.com/DavidPesta/SiteBase
+* Copyright (c) 2012-2013 David Pesta, https://github.com/DavidPesta/SiteBase
 * This file is licensed under the MIT License.
 * You should have received a copy of the MIT License along with this program.
 * If not, see http://www.opensource.org/licenses/mit-license.php
@@ -16,10 +16,11 @@ include __DIR__ . "/../config.php";
 // Define constants
 
 define( "ROOT", __DIR__ );
-define( "LIBRARY", ROOT . "/library" );
-define( "SOURCE", ROOT . "/source" );
-define( "WEBROOT", ROOT . "/webroot" );
-define( "ERRORS", ROOT . "/errors" );
+define( "LIBRARY", ROOT . DIRECTORY_SEPARATOR . "library" );
+define( "SOURCE", ROOT . DIRECTORY_SEPARATOR . "source" );
+define( "WEBROOT", ROOT . DIRECTORY_SEPARATOR . "webroot" );
+define( "DATA", ROOT . DIRECTORY_SEPARATOR . "data" );
+define( "ERRORS", ROOT . DIRECTORY_SEPARATOR . "errors" );
 
 
 // Error Reporting

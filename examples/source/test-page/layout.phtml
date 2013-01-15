@@ -1,0 +1,37 @@
+<html>
+	<head>
+		<title>Test Page</title>
+		
+		<link rel="stylesheet" type="text/css" href="/<?= $this->_cssMd5 ?>.css" />
+		
+		<script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+		<script src="/<?= $this->_jsMd5 ?>.js"></script>
+		
+		<script>
+			$(function() {
+				testScript( "one", "two" );
+			});
+		</script>
+	</head>
+	<body>
+		<h2>Test Page</h2>
+		
+		<img src="<?= $this->folder() ?>/images/GreenLine.jpg" />
+		
+		<br /><br />
+		
+		<?= $this->content( "sublayout1" ) ?>
+		
+		<br /><br />
+		
+		<hr />
+		
+		<br /><br />
+		
+		<?= $this->content( "sublayout2" ) ?>
+		
+		<br /><br />
+		
+		<img src="<?= $this->folder() ?>/images/GreenLine.jpg" />
+	</body>
+</html>
