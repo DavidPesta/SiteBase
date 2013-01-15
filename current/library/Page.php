@@ -32,6 +32,11 @@ class Page {
 	public function __construct( $viewFiles = null ) {
 		if( $viewFiles != null ) $this->addViewFiles( $viewFiles );
 		
+		if( false === is_file( DATA . "/Page/resources.md5" ) ) {
+			$this->compileScan();
+			return;
+		}
+		
 		$serialized = file_get_contents( DATA . "/Page/resources.md5" );
 		if( false === $serialized ) {
 			$this->compileScan();
