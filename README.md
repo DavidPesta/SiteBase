@@ -4,7 +4,7 @@ SiteBase
 A simple framework of boilerplate code for quickly starting new PHP web projects.
 
 <b>Initial Release:</b> May 26, 2012<br>
-<b>Last Updated:</b> January 14, 2013
+<b>Last Updated:</b> February 12, 2013
 
 
 ## Documentation
@@ -65,7 +65,7 @@ Here is what SiteBase gives you "out of the box" over starting with plain vanill
 
     RewriteEngine On
     RewriteCond %{REQUEST_FILENAME} !-f
-    RewriteRule $ router.php
+    RewriteRule ^([\/\-?#A-Za-z0-9]+)$ router.php
 
 ---
 
