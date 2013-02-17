@@ -4,7 +4,7 @@ SiteBase
 A simple framework of boilerplate code for quickly starting new PHP web projects.
 
 <b>Initial Release:</b> May 26, 2012<br>
-<b>Last Updated:</b> February 12, 2013
+<b>Last Updated:</b> February 17, 2013
 
 
 ## Documentation
@@ -65,7 +65,7 @@ Here is what SiteBase gives you "out of the box" over starting with plain vanill
 
     RewriteEngine On
     RewriteCond %{REQUEST_FILENAME} !-f
-    RewriteRule ^([\/\-?#A-Za-z0-9]+)$ router.php
+    RewriteRule ^([\/\-?#A-Za-z0-9]*)$ router.php
 
 ---
 
@@ -157,6 +157,10 @@ Here is what SiteBase gives you "out of the box" over starting with plain vanill
   - if( ! is_dir( DATA . "/Page" ) ) mkdir( DATA . "/Page", 0777, true );
 
 - If a data file is needed by a library, create a folder inside of the data folder with the name of the library, then put the data files for the use of that library in there
+
+- If a controller needs to access the database and the SQL is rather trivial for a particular logical process, then just put the SQL in the controller. But if, for a logical process, the SQL is not trivial, there are multiple SQL calls involved, and/or there is data logic processing needed, that should be abstracted away into a separate model file that resides in the same folder as the page.
+
+- If a model file has a method that needs to be used across two different pages, then you should make a common library out of it and organize it in the library folder
 
 
 ## License
